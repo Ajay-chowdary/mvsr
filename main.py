@@ -64,7 +64,7 @@ def recommend_display(new_df):
     if st.button('Show Details', type="primary", use_container_width=True):
         if search_query and search_query != "🔍 Type to search...":
             st.session_state.selected_movie_name = search_query
-            st.experimental_rerun()
+            st.rerun()
 
 def display_movie_details_and_recommendations(new_df):
     # Add this CSS at the start of the function
@@ -235,7 +235,7 @@ def display_movie_details_and_recommendations(new_df):
                         
                         if st.button("View Movies", key=f"cast_{idx}", use_container_width=True, type="primary"):
                             st.session_state.show_actor_movies = (cast_id, cast_name, url)
-                            st.experimental_rerun()
+                            st.rerun()
 
                 # Display actor movies if selected
                 if st.session_state.show_actor_movies:
@@ -346,7 +346,7 @@ def display_movie_details_and_recommendations(new_df):
                                                type="primary"):
                                         st.session_state.selected_movie_name = exact_title
                                         st.session_state.show_actor_movies = None  # Clear the actor movies view
-                                        st.experimental_rerun()
+                                        st.rerun()
                 
                 # Recommendations section
                 st.markdown("""
@@ -410,7 +410,7 @@ def display_movie_details_and_recommendations(new_df):
                                     type="primary"):
                             st.session_state.selected_movie_name = movie
                             st.session_state.recommendation_source = movie
-                            st.experimental_rerun()
+                            st.rerun()
                             
         except Exception as e:
             st.error(f"Error loading movie details: {str(e)}")
@@ -520,7 +520,7 @@ def create_hero_section(new_df):
                            use_container_width=True,
                            key='search_button'):
                     st.session_state.selected_movie_name = search_query
-                    st.experimental_rerun()
+                    st.rerun()
 
     # Add custom CSS for the search box
     st.markdown("""

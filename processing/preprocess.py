@@ -12,18 +12,37 @@ from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
 
 # Create nltk_data directory in the project folder if it doesn't exist
-nltk_data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nltk_data')
+nltk_data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'nltk_data')
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
 
 # Set NLTK data path to our custom directory
 nltk.data.path.append(nltk_data_dir)
 
-# Download required NLTK data
+
 try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
     nltk.download('stopwords', download_dir=nltk_data_dir)
+    print("Downloaded stopwords")
+
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', download_dir=nltk_data_dir)
+    print("Downloaded punkt")
+
+try:
+    nltk.data.find('corpora/wordnet')
+except LookupError:
+    nltk.download('wordnet', download_dir=nltk_data_dir)
+    print("Downloaded wordnet")
+
+try:
+    nltk.data.find('taggers/averaged_perceptron_tagger')
+except LookupError:
+    nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
+    print("Downloaded averaged_perceptron_tagger")
 
 # Object for porterStemmer
 ps = PorterStemmer()
