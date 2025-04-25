@@ -1,1 +1,2 @@
 Files/*.pkl # prevent large files from being pushed
+venv/
