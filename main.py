@@ -437,15 +437,35 @@ def fetch_person_details(id_):
 def create_hero_section(new_df):
     st.markdown("""
         <div style="
-            background: linear-gradient(135deg, rgba(13, 17, 23, 0.95) 0%, rgba(42, 25, 66, 0.95) 100%);
+            background: linear-gradient(135deg, 
+                rgba(13, 17, 23, 0.95) 0%, 
+                rgba(42, 25, 66, 0.95) 50%,
+                rgba(255, 65, 108, 0.3) 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
             padding: 3rem 2rem;
             border-radius: 24px;
             margin: -6rem -4rem 4rem -4rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         ">
             <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: radial-gradient(circle at 50% 50%, 
+                    rgba(255, 65, 108, 0.1) 0%,
+                    transparent 50%);
+                animation: pulse 4s ease-in-out infinite;
+            "></div>
+            <div style="
+                position: relative;
+                z-index: 1;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -464,6 +484,7 @@ def create_hero_section(new_df):
                         border-radius: 15px;
                         box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
                         transform: rotate(-2deg);
+                        animation: float 6s ease-in-out infinite;
                     ">
                         <span style="
                             font-size: 3.5rem;
@@ -484,6 +505,7 @@ def create_hero_section(new_df):
                                 top: -10px;
                                 right: -20px;
                                 fill: #FFD700;
+                                animation: spin 4s linear infinite;
                             ">
                                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                             </svg>
@@ -495,6 +517,29 @@ def create_hero_section(new_df):
         
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+            
+            @keyframes gradientBG {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.5); opacity: 0.2; }
+                100% { transform: scale(1); opacity: 0.5; }
+            }
+            
+            @keyframes float {
+                0% { transform: rotate(-2deg) translateY(0px); }
+                50% { transform: rotate(-2deg) translateY(-10px); }
+                100% { transform: rotate(-2deg) translateY(0px); }
+            }
+            
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -505,93 +550,135 @@ def create_hero_section(new_df):
             # Get all movie titles
             movie_titles = sorted(new_df["title"].dropna().unique())
             
-            # Create searchable dropdown with suggestions (removed placeholder parameter)
-            search_query = st.selectbox(
-                " Search for movies...",
+            # Create searchable dropdown
+            selected_movie = st.selectbox(
+                "🔍 Search for movies...",
                 options=[""] + movie_titles,
                 key="movie_search",
                 format_func=lambda x: "Type to search..." if x == "" else x
             )
 
-            if search_query and search_query != "Type to search...":
-                # Add a button with custom styling
+            if selected_movie and selected_movie != "Type to search...":
                 if st.button('Show Details', 
                            type="primary", 
                            use_container_width=True,
                            key='search_button'):
-                    st.session_state.selected_movie_name = search_query
+                    st.session_state.selected_movie_name = selected_movie
                     st.rerun()
 
     # Add custom CSS for the search box
     st.markdown("""
         <style>
-/* Styling for the search box label */
-.stSelectbox label {
-    color: white !important;
-    font-size: 1.1rem !important;
-    font-weight: 500 !important;
-    margin-bottom: 0.5rem !important;
-}
+        /* Search box styling */
+        .stSelectbox > div > div {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border: 2px solid #FF416C !important;
+            border-radius: 12px !important;
+            color: #FFFFFF !important;
+            padding: 1rem 1.2rem !important;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.2) !important;
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 1.3rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px !important;
+            text-transform: uppercase !important;
+        }
 
-/* Styling for the search box */
-.stSelectbox > div > div {
-    background-color: rgba(30, 41, 59, 0.98) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    color: white !important;
-    padding: 0.5rem;
-}
+        /* Dropdown styling */
+        div[data-baseweb="popover"] {
+            background-color: rgba(15, 23, 42, 0.98) !important;
+            border: 1px solid #FF416C !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 20px rgba(255, 65, 108, 0.3) !important;
+        }
 
-/* Styling for the dropdown */
-div[data-baseweb="select"] > div {
-    background-color: rgba(30, 41, 59, 0.98) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-}
+        /* Dropdown options styling */
+        div[data-baseweb="select"] ul[role="listbox"] li {
+            color: #FFFFFF !important;
+            padding: 1rem 1.2rem !important;
+            border-bottom: 1px solid rgba(255, 65, 108, 0.2) !important;
+            background-color: rgba(15, 23, 42, 0.98) !important;
+            transition: all 0.3s ease !important;
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 1.2rem !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.5px !important;
+        }
 
-/* Styling for dropdown options container */
-div[data-baseweb="popover"], div[data-baseweb="select"] ul[role="listbox"] {
-    background-color: #1a1a1a !important;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+        div[data-baseweb="select"] ul[role="listbox"] li:hover {
+            background-color: rgba(255, 65, 108, 0.2) !important;
+            color: #FF416C !important;
+            font-weight: 700 !important;
+            transform: translateX(5px) !important;
+        }
 
-/* Styling for dropdown options */
-div[data-baseweb="select"] ul[role="listbox"] li {
-    color: white !important;
-    background-color: #1a1a1a !important;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+        /* Selected option in dropdown */
+        div[data-baseweb="select"] ul[role="listbox"] li[aria-selected="true"] {
+            background-color: rgba(255, 65, 108, 0.25) !important;
+            color: #FF416C !important;
+            font-weight: 700 !important;
+        }
 
-/* Hover effect for dropdown options */
-div[data-baseweb="select"] ul[role="listbox"] li:hover {
-    background-color: #2d3748 !important;
-}
+        /* Selected text in search box */
+        div[data-baseweb="select"] > div > div {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
 
-/* Styling for selected option */
-div[data-baseweb="select"] ul[role="listbox"] li[data-highlighted="true"] {
-    background-color: #2d3748 !important;
-    color: white !important;
-}
+        /* Selected value text */
+        div[data-baseweb="select"] > div > div > div {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
 
-/* Styling for the dropdown text */
-div[data-baseweb="select"] span {
-    color: white !important;
-}
+        /* Dropdown text styling */
+        div[data-baseweb="select"] span {
+            color: #FFFFFF !important;
+            font-weight: 500 !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
 
-/* Styling for the placeholder */
-div[data-baseweb="select"] div[data-testid="stMarkdown"] {
-    color: rgba(255, 255, 255, 0.6) !important;
-}
+        /* Label styling */
+        .stSelectbox label {
+            color: #FFFFFF !important;
+            font-size: 1.4rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0.8rem !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+            font-family: 'Montserrat', sans-serif !important;
+            letter-spacing: 1px !important;
+            text-transform: uppercase !important;
+        }
 
-/* Additional fixes for dropdown elements */
-div[data-baseweb="select"] * {
-    color: white !important;
-}
-</style>
+        /* Placeholder text styling */
+        div[data-baseweb="select"] div[data-testid="stMarkdown"] {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-weight: 500 !important;
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 1.2rem !important;
+            letter-spacing: 0.5px !important;
+        }
 
+        /* Button styling */
+        .stButton > button {
+            background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.8rem 1.5rem !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .stButton > button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.4) !important;
+        }
+        </style>
     """, unsafe_allow_html=True)
 
 def get_base64_of_bin_file(bin_file):
@@ -600,29 +687,18 @@ def get_base64_of_bin_file(bin_file):
     return base64.b64encode(data).decode()
 
 def set_background(image_file):
-    try:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(script_dir, image_file)
-        
-        if not os.path.exists(image_path):
-            st.warning(f"Background image not found at {image_path}. Using default background.")
-            return
-        
-        bin_str = get_base64_of_bin_file(image_path)
-        st.markdown(f"""
-            <style>
-                .stApp {{
-                    background-image: url("data:image/png;base64,{bin_str}");
-                    background-size: cover;
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-attachment: fixed;
-                }}
-            </style>
-        """, unsafe_allow_html=True)
-    except Exception as e:
-        st.warning(f"Error setting background: {str(e)}")
-
+    # Set a clean gradient background
+    st.markdown("""
+        <style>
+            .stApp {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
 def set_custom_styles():
     st.markdown("""
@@ -687,6 +763,44 @@ def set_custom_styles():
 def create_theme_toggle():
     # Create a container in the sidebar for the theme toggle
     with st.sidebar:
+        st.markdown("""
+            <style>
+            /* Theme toggle container styling */
+            .stRadio > label {
+                color: white !important;
+                font-size: 1.1rem !important;
+                font-weight: 500 !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Radio button options styling */
+            .stRadio > div {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                padding: 1rem !important;
+                border-radius: 12px !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            }
+            
+            /* Radio button label styling */
+            .stRadio label {
+                color: white !important;
+                font-size: 1rem !important;
+                font-weight: 500 !important;
+            }
+            
+            /* Selected radio button styling */
+            .stRadio [data-baseweb="radio"] {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                border-color: white !important;
+            }
+            
+            /* Radio button text styling */
+            .stRadio span {
+                color: white !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        
         theme = st.radio(
             "Choose Theme",
             ["Dark", "Light"],
@@ -775,7 +889,6 @@ def set_theme_config():
         
         .stButton button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
         
         /* Title styling */
@@ -807,6 +920,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-        
